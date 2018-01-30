@@ -1,6 +1,8 @@
 # valid
 VALID - VisuAL Image Diff --- visual regression testing with ease
 
+Note that this project is **WIP** and not yet reliable for use in actual testing. Proposals and PRs are welcome! :D
+
 ### Proposed Flow
 1. Pass in an array of links/routes to visit.
 2. The lib will then loop through these, visit each link and take a screenshot.
@@ -16,11 +18,21 @@ VALID - VisuAL Image Diff --- visual regression testing with ease
      didPass: BOOLEAN,
      faultyPages: [{
        url: 'LINK',
-       image: '[PATH TO DIFF IMG]' },
+       image: '[PATH TO DIFF IMG]',
        ...
-     ]
+     }]
    }
    ```
 
 **Notes on implementation**
-* The input data should be passable as JSON file or a JSON compliant object
+
+The input data should be passable as JSON file or a JSON compliant object. This could look like the following:
+```js
+[{
+ url: 'https://www.example.com/about',
+ image: './regression-testing/expected/about.png',
+ didChange: false
+}]
+```
+The `didChange` property implies that there should be no difference between the captured and expected image. If a difference is found it will be treated as an error case.
+If this is on the other hand set to `true`, we expect a difference and won't treat this as an error. The captured image will then (if point 8 in the **Propose Flow** list above is implemented) replace the one in the expected folder
