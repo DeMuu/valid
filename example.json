@@ -1,0 +1,28 @@
+{
+  "config": {
+    "baseUrl": "http://www.runtastic.com/",
+    "baseImageFolder": "valid-testing/expected/"
+  },
+  "links": [{
+    "path": "apps",
+    "didChange": false
+   }, {
+    "path": "training",
+    "didChange": false
+   }, {
+    "path": "apps/results/lite",
+    "didChange": true
+   }, {
+    "path": "shop",
+    "didChange": false
+   }, {
+    "path": "overthrow",
+    "didChange": false
+   }, {
+    "path": "",
+    "didChange": false
+   }, {
+    "path": "404",
+    "didChange": true
+   }]
+}
