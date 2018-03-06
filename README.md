@@ -3,6 +3,18 @@ VALID - VisuAL Image Diff --- visual regression testing with ease
 
 Note that this project is **WIP** and not yet reliable for use in actual testing. Proposals and PRs are welcome! :D
 
+## Installation
+Note that **node version 7.10.1 or newer is required** to use valid.
+
+`node install -g valid`
+or
+`yarn global add valid`
+
+## Usage
+1. Setup your config JSON file if you haven't (see example config below)
+2. Run `valid config.json`
+  a. Optionally you can set --checkMobile and --mobileLandscape parameters which are false by default. It is suggested that you use different config files if you want to run tests for desktop and mobile viewports.
+
 ### Proposed Flow
 1. Pass in an array of links/routes to visit.
 2. The lib will then loop through these, visit each link and take a screenshot.

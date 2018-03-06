@@ -1,7 +1,12 @@
 {
   "config": {
     "baseUrl": "http://www.runtastic.com/",
-    "baseImageFolder": "valid-testing/expected/"
+    "baseImageFolder": "valid-testing/",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "enableCaching": false
   },
   "links": [{
     "path": "apps",
@@ -11,13 +16,14 @@
     "didChange": false
    }, {
     "path": "apps/results/lite",
-    "didChange": true
+    "didChange": false
    }, {
     "path": "shop",
     "didChange": false
    }, {
     "path": "overthrow",
-    "didChange": false
+    "didChange": false,
+    "tolerance": 5
    }, {
     "path": "",
     "didChange": false

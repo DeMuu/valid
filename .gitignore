@@ -33,7 +33,7 @@ typings/
 .yarn-integrity
 
 # example images inside the test valid-testing/expected folder
-valid-testing/expected/**
+valid-testing/**
 
 # Other
 .DS_Store
