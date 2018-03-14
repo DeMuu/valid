@@ -61,8 +61,10 @@ const validatePage = async (browserObj, pageObj, linkCollection, baseUrl, baseIm
 
     const expectedPath = `${baseImageFolder}expected/${currLinkItem.path}.png`;
     let savePath = expectedPath;
+    let isFirstCapture = true;
     if (fs.existsSync(savePath)) {
       savePath = `${baseImageFolder}tmp/${currLinkItem.path}.png`;
+      isFirstCapture = false;
     }
 
     // @TODO: add possibility to set cookies (e.g. for authentication)
@@ -76,10 +78,10 @@ const validatePage = async (browserObj, pageObj, linkCollection, baseUrl, baseIm
     }
 
     looksSame(expectedPath, savePath, function (error, equal) {
-      // @NOTE: this is just for testing purposes and should reflect actual results
-      let testPassed = false;//Math.round(Math.random()) === 1 ? true : false;
+      let testPassed = false;
 
-      if ((!equal && !currLinkItem.didChange) || (equal && currLinkItem.didChange)) {
+      // we know the test failed if the diff result does not match the expected didChange value and it's not a first-time capture
+      if ((!equal && !currLinkItem.didChange) || (equal && currLinkItem.didChange && !isFirstCapture)) {
         looksSame.createDiff({
           reference: expectedPath,
           current: savePath,
@@ -93,6 +95,11 @@ const validatePage = async (browserObj, pageObj, linkCollection, baseUrl, baseIm
       }
       else {
         testPassed = true;
+      }
+
+      // if a diff is detected but it was expected we update the image file in the "expected" folder for future runs
+      if (!equal && currLinkItem.didChange) {
+        fs.createReadStream(savePath).pipe(fs.createWriteStream(`${baseImageFolder}expected/${currLinkItem.path}.png`));
       }
 
       loadingSpinner.stop(true);
@@ -161,8 +168,23 @@ module.exports = (inputFile, checkMobile = false, mobileLandscape = false) => {
   
       const fileData = JSON.parse(data);
       const linksCount = fileData.links.length;
+      const baseImageFolder = fileData.config.baseImageFolder.slice(-1) === '/' ? fileData.config.baseImageFolder : fileData.config.baseImageFolder + '/';
   
       loadingSpinner.stop(true);
+
+      // we need to create the necessary sub-directories to avoid exceptions when storing images later on
+      if (!fs.existsSync(`${baseImageFolder}expected`)) {
+        fs.mkdirSync(`${baseImageFolder}expected`);
+        console.log(chalk`Creating directory: {underline ${baseImageFolder}expected}\n`);
+      }
+      if (!fs.existsSync(`${baseImageFolder}tmp`)) {
+        fs.mkdirSync(`${baseImageFolder}tmp`);
+        console.log(chalk`Creating directory: {underline ${baseImageFolder}tmp}\n`);
+      }
+      if (!fs.existsSync(`${baseImageFolder}diff`)) {
+        fs.mkdirSync(`${baseImageFolder}diff`);
+        console.log(chalk`Creating directory: {underline ${baseImageFolder}diff}\n`);
+      }
 
       puppeteer.launch().then(async browser => {
         const page = await browser.newPage();
@@ -176,7 +198,7 @@ module.exports = (inputFile, checkMobile = false, mobileLandscape = false) => {
 
         page.setCacheEnabled(fileData.config.enableCaching);
 
-        await validatePage(browser, page, fileData.links, fileData.config.baseUrl, fileData.config.baseImageFolder);
+        await validatePage(browser, page, fileData.links, fileData.config.baseUrl, baseImageFolder);
       });
     });
   }, 500);
